@@ -1,0 +1,43 @@
+# USAGE: 
+# -- Buld the docker image : docker build -f geant4docker -t geant4-image .  
+# -- Run the docker image : docker run -it --rm geant4-docker
+
+# Use the latest LTS version of Ubuntu as a parent image
+FROM ubuntu:22.04
+
+# Set non-interactive mode to avoid prompts during package installation
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Update and install necessary tools and dependencies
+RUN apt-get update && apt-get install -y \
+    cmake \
+    g++ \
+    gcc \
+    make \
+    libexpat1-dev \
+    libxerces-c-dev \
+    qtbase5-dev \
+    wget \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the Geant4 version
+ENV GEANT4_VERSION=11.1.2
+
+# Download Geant4
+RUN wget https://gitlab.cern.ch/geant4/geant4/-/archive/v11.1.2/geant4-v11.1.2.tar.gz && \
+    tar xzf geant4-v${GEANT4_VERSION}.tar.gz && \
+    mkdir geant4-build
+
+# Compile and install Geant4
+WORKDIR geant4-build
+RUN cmake ../geant4-v${GEANT4_VERSION} -DGEANT4_INSTALL_DATA=ON && \
+    make -j$(nproc) && \
+    make install
+
+# Set environment variables for Geant4 data paths. This is an example for G4LEDATA; 
+# you may need to set additional paths based on the datasets you need.
+ENV G4LEDATA /usr/local/share/Geant4-${GEANT4_VERSION}/data/G4EMLOW7.13
+# ... Add other Geant4 data paths as required ...
+
+# Set the default command to bash
+CMD ["/bin/bash"]
