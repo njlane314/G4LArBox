@@ -1,5 +1,5 @@
 # USAGE: 
-# -- Buld the docker image : docker build -f geant4docker -t geant4-image .  
+# -- Build the docker image : docker build -f geant4docker -t geant4docker .  
 # -- Run the docker image : docker run -it --rm geant4-docker
 
 # Use the latest LTS version of Ubuntu as a parent image
@@ -8,36 +8,67 @@ FROM ubuntu:22.04
 # Set non-interactive mode to avoid prompts during package installation
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Update and install necessary tools and dependencies
+# Update and install necessary tools and dependencies for building
 RUN apt-get update && apt-get install -y \
     cmake \
     g++ \
     gcc \
     make \
+    git \
     libexpat1-dev \
     libxerces-c-dev \
     qtbase5-dev \
     wget \
+    python3 \
+    python3-dev \
+    libgsl-dev \
+    libgl1-mesa-dev \
+    libxmu-dev \
+    dpkg-dev \
+    binutils \
+    libx11-dev \
+    libxpm-dev \
+    libxft-dev \
+    libxext-dev \
+    libssl-dev \
     && rm -rf /var/lib/apt/lists/*
+
+# Define a base directory for all software installations
+WORKDIR /software
+
+# Install CLHEP
+RUN mkdir CLHEP && cd CLHEP && \
+    wget --no-check-certificate https://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.7.1.tgz && \
+    tar xzf clhep-2.4.7.1.tgz && \
+    mkdir build && cd build && \
+    cmake ../2.4.7.1/CLHEP && \
+    make -j1 && make install
+
+# Install ROOT from git repository
+RUN git clone --branch latest-stable --depth=1 https://github.com/root-project/root.git root_src && \
+    mkdir root_build root_install && cd root_build && \
+    cmake -DCMAKE_INSTALL_PREFIX=/software/root_install ../root_src && \
+    cmake --build . -- install -j1 && \
+    echo "source /software/root_install/bin/thisroot.sh" >> /root/.bashrc
 
 # Set the Geant4 version
 ENV GEANT4_VERSION=11.1.2
 
-# Download Geant4
-RUN wget https://gitlab.cern.ch/geant4/geant4/-/archive/v11.1.2/geant4-v11.1.2.tar.gz && \
+# Download, compile, and install Geant4
+RUN mkdir geant4 && cd geant4 && \
+    wget --no-check-certificate https://gitlab.cern.ch/geant4/geant4/-/archive/v${GEANT4_VERSION}/geant4-v${GEANT4_VERSION}.tar.gz && \
     tar xzf geant4-v${GEANT4_VERSION}.tar.gz && \
-    mkdir geant4-build
+    mkdir build && cd build && \
+    cmake ../geant4-v${GEANT4_VERSION} \
+      -DGEANT4_INSTALL_DATA=ON \
+      -DGEANT4_USE_ROOT=ON \
+      -DGEANT4_USE_SYSTEM_CLHEP=ON \
+      -DCLHEP_ROOT_DIR=/usr/local \
+      -DGEANT4_USE_OPENGL_X11=ON && \
+    make -j1 && make install
 
-# Compile and install Geant4
-WORKDIR geant4-build
-RUN cmake ../geant4-v${GEANT4_VERSION} -DGEANT4_INSTALL_DATA=ON && \
-    make -j$(nproc) && \
-    make install
-
-# Set environment variables for Geant4 data paths. This is an example for G4LEDATA; 
-# you may need to set additional paths based on the datasets you need.
-ENV G4LEDATA /usr/local/share/Geant4-${GEANT4_VERSION}/data/G4EMLOW7.13
-# ... Add other Geant4 data paths as required ...
+# Cleanup unnecessary files, but preserve the installed binaries and libraries.
+RUN rm -rf /software/*/build && rm -rf /software/*.tar.gz && rm -rf /software/*.tgz
 
 # Set the default command to bash
 CMD ["/bin/bash"]
