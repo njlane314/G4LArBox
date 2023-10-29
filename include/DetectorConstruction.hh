@@ -28,6 +28,11 @@ namespace G4LArBox
         ~DetectorConstruction();
 
         G4VPhysicalVolume* Construct();
+
+        G4VPhysicalVolume* GetWorldVolume() const { return box_physical; }
+
+    private:
+        G4VPhysicalVolume* box_physical;
   };
 }
 

@@ -2,6 +2,12 @@
 
 namespace G4LArBox
 {
+    MediumResponse::MediumResponse() 
+    {}
+
+    MediumResponse::~MediumResponse()
+    {}
+
     void MediumResponse::Excitation(const G4Step* step, int nexc, int nion)
     {    
         double Wion = 23.6 * eV;
@@ -75,7 +81,7 @@ namespace G4LArBox
             return BirksRecombination(dEdx, Efld) + EscapeRecombination(dEdx, Efld);
         };
 
-        double r = ChargeRecombination(0.5, Efld);
+        r = ChargeRecombination(0.5, Efld);
 
         ntherm = static_cast<int>(std::round(CLHEP::RandBinomial::shoot(ntherm, 1 - r)));
         if (ntherm < 0) 
@@ -89,17 +95,17 @@ namespace G4LArBox
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
     void MediumResponse::ExcitationQuenching(int nopt, int ntherm, double r, double Qopt) 
-    [
+    {
         nopt = CLHEP::RandBinomial::shoot(nopt, Qopt);
-    ]
+    }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void MediumResponse::RunProcesses(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r) 
+    void MediumResponse::RunProcesses(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r, double Qopt) 
     {
         Excitation(step, nexc, nion);
         Recombination(step, nexc, nion, nopt, ntherm, r);
-        ExcitationQuenching(nopt, ntherm, r, Qopt)
+        ExcitationQuenching(nopt, ntherm, r, Qopt);
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......

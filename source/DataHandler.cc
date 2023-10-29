@@ -2,156 +2,16 @@
 
 namespace G4LArBox 
 {
-    Hit::Hit(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r)
+    DataHandler* DataHandler::instance_ = nullptr;
+
+    DataHandler* DataHandler::Instance() 
     {
-        tid = step->GetTrack()->GetTrackID();
-        pid = step->GetTrack()->GetParentID();
-        parid = step->GetTrack()->GetParentID();
-        ekin = step->GetPreStepPoint()->GetKineticEnergy();
-        edep = step->GetTotalEnergyDeposit();
-
-        G4ThreeVector startPos = step->GetPreStepPoint()->GetPosition();
-        xs = startPos.x();
-        ys = startPos.y();
-        zs = startPos.z();
-
-        G4ThreeVector endPos = step->GetPostStepPoint()->GetPosition();
-        xe = endPos.x();
-        ye = endPos.y();
-        ze = endPos.z();
-
-        len = step->GetStepLength();
-        ta = step->GetPreStepPoint()->GetGlobalTime();
-
-        hnexc = nexc;
-        hnion = nion;
-        hnopt = nopt;
-        hntherm = ntherm;
-        hr = r;
-    }
-
-    int Hit::getTID() const               { return tid; }
-    int Hit::getPID() const               { return pid; }
-    int Hit::getParID() const             { return parid; }
-    double Hit::getEkin() const           { return ekin; }
-    double Hit::getEdep() const           { return edep; }
-    double Hit::getLength() const         { return len; }
-    double Hit::getTime() const           { return ta; }
-
-    int Hit::getNExc() const              { return hnexc; }
-    int Hit::getNIon() const              { return hnion; }
-    int Hit::getNOpt() const              { return hnopt; }
-    int Hit::getNTherm() const            { return hntherm; }
-    double Hit::getR() const              { return hr; }
-
-    void Hit::getStartPos(double &x, double &y, double &z) const { x = xs; y = ys; z = zs; }
-    void Hit::getEndPos(double &x, double &y, double &z) const   { x = xe; y = ye; z = ze; }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-    Event::Event(const G4event* event) 
-    {
-        x0 = event->GetPrimaryVertex(0)->GetX0();
-        y0 = event->GetPrimaryVertex(0)->GetY0();
-        z0 = event->GetPrimaryVertex(0)->GetZ0();
-
-        nprim = event->GetNumberOfPrimaryVertex();
-    }
-
-    void Event::getInteractionPos(double &x, double &y, double &z) const { x = x0; y = y0; z = z0; }
-
-    void Event::addPrimary(const PrimaryParticle& primary) { primaries.push_back(std::make_unique<PrimaryParticle>(primary)); }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-    PrimaryParticle::PrimaryParticle(const G4PrimaryParticle* particle)
-    {
-        pida = particle->GetPDGcode();
-        pdga = particle->GetPDGcode();
-        ni = 0;
-        ekina = particle->GetKineticEnergy();
-
-        G4ThreeVector startPos = particle->GetPosition();
-        xa = startPos.x();
-        ya = startPos.y();
-        za = startPos.z();
-
-        G4ThreeVector momentum = particle->GetMomentum();
-        pxa = momentum.x();
-        pya = momentum.y();
-        pza = momentum.z();
-
-        ta = particle->GetGlobalTime();
-    }
-
-    int PrimaryParticle::getPIDA() const    { return pida; }
-    int PrimaryParticle::getPDGA() const    { return pdga; }
-    int PrimaryParticle::getNI() const      { return ni; }
-    double PrimaryParticle::getTime() const { return ta; }
-    double PrimaryParticle::getEkin() const { return ekina; }
-
-    void PrimaryParticle::getStartPosition(double &x, double &y, double &z) const { x = xa; y = ya; z = za; }
-    void PrimaryParticle::getMomentum(double &px, double &py, double &pz) const { px = pxa; py = pya; pz = pza; }
-    void PrimaryParticle::addSecondary(const SecondaryParticle& secondary)    { secondaries.push_back(std::make_unique<SecondaryParticle>(secondary)); }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-    SecondaryParticle::SecondaryParticle(const G4Track* track)
-    {
-        pidi = track->GetDefinition()->GetPDGEncoding();
-        pdgi = track->GetDefinition()->GetPDGEncoding();
-        parid = track->GetParentID();
-        ekini = track->GetKineticEnergy();
-
-        G4ThreeVector startPos = track->GetPosition();
-        xi = startPos.x();
-        yi = startPos.y();
-        zi = startPos.z();
-
-        G4ThreeVector momentum = track->GetMomentum();
-        pxi = momentum.x();
-        pyi = momentum.y();
-        pzi = momentum.z();
-
-        ti = track->GetGlobalTime();
-    }
-
-    int SecondaryParticle::getPID() const      { return pidi; }
-    int SecondaryParticle::getPDG() const      { return pdgi; }
-    int SecondaryParticle::getParentID() const { return parid; }
-    double SecondaryParticle::getTime() const  { return ti; }
-    double SecondaryParticle::getEkin() const  { return ekini; }
-
-    void SecondaryParticle::getStartPosition(double &x, double &y, double &z) const { x = xi; y = yi; z = zi; }
-    void SecondaryParticle::getMomentum(double &px, double &py, double &pz) const   { px = pxi; py = pyi; pz = pzi; }
-    void SecondaryParticle::addHit(const Hit& hit)                                  { hits.push_back(std::make_unique<Hit>(hit)); }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
-    DataHandler* DataHandler::instance = nullptr;
-
-    DataHandler* DataHandler::GetInstance() 
-    {
-        if (!instance) 
+        if (instance_ == nullptr) 
         {
-            instance = new DataHandler("output.root");
+            instance_ = new DataHandler();
         }
-        return instance;
-    }
 
-    DataHandler::DataHandler(const char* filename)
-        : rootFile(nullptr), hitTree(nullptr), primaryTree(nullptr), secondaryTree(nullptr) 
-    {
-        rootFile = new TFile(filename, "RECREATE");
-
-        hitTree = new TTree("hitTree", "Tree of hits");
-        hitTree->Branch("hit", &hit, "tid/I:pid/I:parid/I:ekin/D:edep/D:xs/D:ys/D:zs/D:xe/D:ye/D:ze/D:len/D:ta/D");
-
-        primaryTree = new TTree("primaryTree", "Tree of primaries");
-        primaryTree->Branch("primary", &primary, "pida/I:pdga/I:ni/I:xa/D:ya/D:za/D:ta/D:pxa/D:pya/D:pza/D:ekina/D");
-
-        secondaryTree = new TTree("secondaryTree", "Tree of secondaries");
-        secondaryTree->Branch("secondary", &secondary, "pidi/I:pdgi/I:parid/I:xi/D:yi/D:zi/D:ti/D:pxi/D:pyi/D:pzi/D:ekini/D");
+        return instance_;
     }
 
     DataHandler::~DataHandler() 
@@ -163,48 +23,108 @@ namespace G4LArBox
         }
     }
 
-    void DataHandler::AddHit(const G4Step* step, int nexc, int nion, double r) 
+    DataHandler::DataHandler(const char* filename)
     {
-        hits.push_back(Hit(step, nexc, nion, r));
+        rootFile = new TFile(filename, "RECREATE");
+
+        stepTree = new TTree("stepTree", "Tree of hits");
+        stepTree->Branch("edep", &edep_);
+        stepTree->Branch("len", &len_);
+        stepTree->Branch("xs", &xs_);
+        stepTree->Branch("ys", &ys_);
+        stepTree->Branch("zs", &zs_);
+        stepTree->Branch("xe", &xe_);
+        stepTree->Branch("ye", &ye_);
+        stepTree->Branch("ze", &ze_);
+        stepTree->Branch("ta", &ta_);    
+        stepTree->Branch("parid", &parid_);
+
+        trackTree = new TTree("trackTree", "trackTree");
+        trackTree->Branch("xi", &xi_);
+        trackTree->Branch("yi", &yi_);
+        trackTree->Branch("zi", &zi_);
+        trackTree->Branch("ti", &ti_);
+        trackTree->Branch("pxi", &pxi_);
+        trackTree->Branch("pyi", &pyi_);
+        trackTree->Branch("pzi", &pzi_);
+        trackTree->Branch("ekini", &ekini_);
+        trackTree->Branch("pdg", &pdg_);
+        trackTree->Branch("curid", &curid_);
+        trackTree->Branch("preid", &preid_);
     }
 
-    void DataHandler::AddPrimary(const PrimaryParticle& primary) 
+    void DataHandler::AddStep(const G4Step* step) 
     {
-        primaries.push_back(PrimaryParticle(primary));
+        edep_.push_back(step->GetTotalEnergyDeposit());
+        len_.push_back(step->GetStepLength());
+        ta_.push_back(step->GetPreStepPoint()->GetGlobalTime());
+
+        G4ThreeVector startPos = step->GetPreStepPoint()->GetPosition();
+        xs_.push_back(startPos.x());
+        ys_.push_back(startPos.y());
+        zs_.push_back(startPos.z());
+
+        G4ThreeVector endPos = step->GetPostStepPoint()->GetPosition();
+        xe_.push_back(endPos.x());
+        ye_.push_back(endPos.y());
+        ze_.push_back(endPos.z());
+
+        parid_.push_back(step->GetTrack()->GetParentID());
     }
 
-    void DataHandler::AddSecondary(const G4Track* track) 
+    void DataHandler::AddTrack(const G4Track* track) 
     {
-        secondaries.push_back(SecondaryParticle(track));
+        G4ThreeVector pos = track->GetPosition();
+        xi_.push_back(pos.x());
+        yi_.push_back(pos.y());
+        zi_.push_back(pos.z());
+
+        G4ThreeVector momentum = track->GetMomentum();
+        pxi_.push_back(momentum.x());
+        pyi_.push_back(momentum.y());
+        pzi_.push_back(momentum.z());
+
+        ti_.push_back(track->GetGlobalTime());
+        ekini_.push_back(track->GetKineticEnergy());
+        pdg_.push_back(track->GetDefinition()->GetPDGEncoding());
+        curid_.push_back(track->GetTrackID());
+        preid_.push_back(track->GetParentID());
     }
 
-    void DataHandler::WriteToFile() 
+    void DataHandler::AddEntry() 
     {
-        for (const auto& hit : hits) 
-        {
-            this->hit = hit;
-            hitTree->Fill();
-        }
+        stepTree->Fill();
+        trackTree->Fill();
+    }
 
-        for (const auto& primary : primaries) 
-        {
-            this->primary = primary;
-            primaryTree->Fill();
-        }
-
-        for (const auto& secondary : secondaries) 
-        {
-            this->secondary = secondary;
-            secondaryTree->Fill();
-        }
-
+    void DataHandler::WriteFile() 
+    {
         rootFile->Write();
     }
 
-    void DataHandler::Reset() 
+    void DataHandler::Reset()
     {
-        hits.clear();
-        primaries.clear();
-        secondaries.clear();
+        edep_.clear();
+        len_.clear();
+        xs_.clear();
+        ys_.clear();
+        zs_.clear();
+        xe_.clear();
+        ye_.clear();
+        ze_.clear();
+        ta_.clear();
+        parid_.clear();
+
+        xi_.clear();
+        yi_.clear();
+        zi_.clear();
+        ti_.clear();
+        pxi_.clear();
+        pyi_.clear();
+        pzi_.clear();
+        ekini_.clear();
+        pdg_.clear();
+        curid_.clear();
+        preid_.clear();
     }
 }

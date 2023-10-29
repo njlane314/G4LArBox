@@ -1,7 +1,5 @@
 #include "TrackingAction.hh"
 
-#include "DataHandler.hh"
-
 namespace G4LArBox 
 {
     TrackingAction::TrackingAction() 
@@ -15,9 +13,6 @@ namespace G4LArBox
 
     void TrackingAction::PostUserTrackingAction(const G4Track* track) 
     {
-        if (track->GetParentID() != 0) 
-        {
-            DataHandler::GetInstance()->AddSecondary(track);
-        }
+        DataHandler::Instance()->AddTrack(track);
     }
 }

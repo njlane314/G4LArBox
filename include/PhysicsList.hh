@@ -16,9 +16,6 @@
 #include "G4EmStandardPhysics_option4.hh"
 #include "G4HadronElasticPhysicsHP.hh"
 
-#include "NeutronPhysics.hh"
-#include "AlphaGammaPhysics.hh"
-
 namespace G4LArBox{
     class PhysicsList : public G4VModularPhysicsList{
     public:
