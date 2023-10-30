@@ -24,18 +24,18 @@ void PlotParticleTrajectories(const char* filename) {
 
     TCanvas* c1 = new TCanvas("c1", "Canvas for x vs z", 800, 600);
     histXZ->Draw("colz");
-    c1->SaveAs("plot_x_vs_z.png");
+    c1->SaveAs("plots/plot_x_vs_z.png");
     
     TCanvas* c2 = new TCanvas("c2", "Canvas for x vs y", 800, 600);
     histXY->Draw("colz");
-    c2->SaveAs("plot_x_vs_y.png");
+    c2->SaveAs("plots/plot_x_vs_y.png");
 
     TH3F* histXYZ = new TH3F("histXYZ", "", 500, -500, 500, 1000, -500, 500, 1000, -500, 500);
     tree->Draw("xs:ys:zs:edep>>histXYZ");
 
     TCanvas* c3 = new TCanvas("c3", "Canvas for x vs y vs z", 1000, 1000);
     histXYZ->Draw("BOX2");
-    c3->SaveAs("plot_x_vs_y_vs_z.png");
+    c3->SaveAs("plots/plot_x_vs_y_vs_z.png");
 
     delete c3;
     delete histXYZ;

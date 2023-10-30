@@ -37,7 +37,7 @@ void PlotParticleLifetimes(const char* filename) {
     TCanvas* cLifetime = new TCanvas("cLifetime", "Particle Lifetime Distribution", 800, 600);
     cLifetime->SetLogy();
     histLifetime->Draw();
-    cLifetime->SaveAs("particle_lifetimes.png");
+    cLifetime->SaveAs("plots/particle_lifetimes.png");
 
     delete cLifetime;
     delete histLifetime;
