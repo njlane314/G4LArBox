@@ -34,7 +34,7 @@ namespace G4LArBox
         void Reset();
 
     private:
-        DataHandler(const char* filename = "output.root");
+        DataHandler(const char* filename = "data/output.root");
 
         static DataHandler* instance_;
 

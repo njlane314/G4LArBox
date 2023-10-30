@@ -17,14 +17,6 @@ namespace G4LArBox
         
         MediumResponse* ResponseModel = new MediumResponse(nexc, nion, nopt, ntherm, r);
         ResponseModel->GenerateResponse(step);
-
-        std::cout << "----- SteppingAction Debug Info -----\n"
-                  << "nexc: " << nexc << '\n'
-                  << "nion: " << nion << '\n'
-                  << "nopt: " << nopt << '\n'
-                  << "ntherm: " << ntherm << '\n'
-                  << "r: " << r << '\n'
-                  << "-------------------------------------\n";
         
         DataHandler::Instance()->AddStep(step);
         
