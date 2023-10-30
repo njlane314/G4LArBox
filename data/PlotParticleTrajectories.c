@@ -13,11 +13,11 @@ void PlotParticleTrajectories(const char* filename) {
     TTree* tree = (TTree*)file->Get("stepTree");  
 
     TH2F* histXZ = new TH2F("histXZ", "x vs z; z [mm]; x [mm]", 
-                            1000, -500, 500,  
-                            1000, -500, 500); 
+                            500, -500, 500,  
+                            500, -500, 500); 
     TH2F* histXY = new TH2F("histXY", "x vs y; y [mm]; x [mm]", 
-                            1000, -500, 500,  
-                            31000, -500, 500); 
+                            500, -500, 500,  
+                            500, -500, 500); 
     
     tree->Draw("xs:zs>>histXZ", "", "colz");
     tree->Draw("xs:ys>>histXY", "", "colz");
@@ -30,7 +30,7 @@ void PlotParticleTrajectories(const char* filename) {
     histXY->Draw("colz");
     c2->SaveAs("plots/plot_x_vs_y.png");
 
-    TH3F* histXYZ = new TH3F("histXYZ", "", 500, -500, 500, 1000, -500, 500, 1000, -500, 500);
+    TH3F* histXYZ = new TH3F("histXYZ", "", 500, -500, 500, 500, -500, 500, 500, -500, 500);
     tree->Draw("xs:ys:zs:edep>>histXYZ");
 
     TCanvas* c3 = new TCanvas("c3", "Canvas for x vs y vs z", 1000, 1000);

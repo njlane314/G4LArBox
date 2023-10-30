@@ -1,6 +1,6 @@
 # USAGE: 
-# -- Build the docker image : docker build -f geant4docker -t geant4docker .  
-# -- Run the docker image : docker run -it --rm geant4-docker
+# -- Build the docker image : docker build -f geant4docker -t DockerFile .  
+# -- Run the docker image : docker run -it --rm DockerFile
 
 # Use the latest LTS version of Ubuntu as a parent image
 FROM ubuntu:22.04

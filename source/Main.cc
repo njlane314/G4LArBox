@@ -11,6 +11,8 @@
 #include "G4UIExecutive.hh"
 
 #include "Randomize.hh"
+#include <ctime>  
+#include "CLHEP/Random/Random.h"
 
 using namespace G4LArBox;
 
@@ -18,7 +20,11 @@ using namespace G4LArBox;
 
 int main(int argc,char** argv)
 {
-    std::cout << "-- Starting program..." << std::endl;     
+    std::cout << "-- Starting program..." << std::endl;
+    
+    CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
+    G4long seed = time(0);
+    CLHEP::HepRandom::setTheSeed(seed);
 
     std::string generator_config;
 
