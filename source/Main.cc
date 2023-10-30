@@ -25,22 +25,52 @@ int main(int argc,char** argv)
     G4UIExecutive* ui = nullptr;
     ui = new G4UIExecutive(argc, argv);
 
+    double lbox_, hbox_, wbox_;
+
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
 
-        if ((arg == "-g" || arg == "--generator") && i + 1 < argc) {
+        if ((arg == "-g" || arg == "--generator") && i + 1 < argc) 
+        {
             generator_config = argv[++i];
         }
-        else {
+        else if (arg == "-w" || arg == "--width") 
+        {
+            if (i + 1 < argc) {
+                wbox_ = std::stod(argv[++i])*m;
+            } else {
+                std::cout << "-- Failed to parse box width" << std::endl;
+                return 1;
+            }
+        } 
+        else if (arg == "-h" || arg == "--height") 
+        {
+            if (i + 1 < argc) {
+                hbox_ = std::stod(argv[++i])*m;
+            } else {
+                std::cout << "-- Failed to parse box height" << std::endl;
+                return 1;
+            }
+        } 
+        else if (arg == "-l" || arg == "--length") 
+        {
+            if (i + 1 < argc) {
+                lbox_ = std::stod(argv[++i])*m;
+            } else {
+                std::cout << "-- Failed to parse box length" << std::endl;
+                    return 1;
+            }
+        } 
+        else 
+        {
             std::cout << "-- Failed to parse command line arguments" << std::endl;
-            
         }
     }
     std::cout << "-- Parsing arguments done" << std::endl;
 
     G4RunManager* runManager = new G4RunManager();
 
-    runManager->SetUserInitialization(new DetectorConstruction());
+    runManager->SetUserInitialization(new DetectorConstruction(wbox_, hbox_, lbox_));
     runManager->SetUserInitialization(new PhysicsList());
     runManager->SetUserInitialization(new ActionInitialisation());
     

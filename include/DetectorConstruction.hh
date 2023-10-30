@@ -24,15 +24,16 @@ namespace G4LArBox
   class DetectorConstruction : public G4VUserDetectorConstruction
   {
     public:
-        DetectorConstruction();
+        DetectorConstruction(const double wbox, const double hbox, const double lbox);
         ~DetectorConstruction();
 
         G4VPhysicalVolume* Construct();
-
         G4VPhysicalVolume* GetWorldVolume() const { return box_physical; }
 
     private:
         G4VPhysicalVolume* box_physical;
+
+        double wbox_, hbox_, lbox_;
   };
 }
 
