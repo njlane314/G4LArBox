@@ -6,6 +6,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleGun.hh"
 #include "globals.hh"
+#include "G4GeneralParticleSource.hh"
 
 #include "G4LogicalVolumeStore.hh"
 #include "G4LogicalVolume.hh"
@@ -22,12 +23,14 @@ namespace G4LArBox
   class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
   {
     public:
-      PrimaryGeneratorAction();
-      ~PrimaryGeneratorAction();
+        PrimaryGeneratorAction();
+        ~PrimaryGeneratorAction();
 
-      void GeneratePrimaries(G4Event*);
+        void GeneratePrimaries(G4Event*);
+        void BulkVertexGenerator(G4ThreeVector& vtx);
 
-      void BulkVertexGenerator(G4ThreeVector& vtx);
+    private:
+        G4GeneralParticleSource* generalgen_;
   };
 }
 

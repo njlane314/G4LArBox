@@ -99,6 +99,7 @@ namespace G4LArBox
 
     void DataHandler::WriteFile() 
     {
+        std::cout << "-- Writing to file..." << std::endl;
         rootFile->Write();
     }
 

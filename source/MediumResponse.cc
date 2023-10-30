@@ -2,13 +2,14 @@
 
 namespace G4LArBox
 {
-    MediumResponse::MediumResponse() 
+    MediumResponse::MediumResponse(int& nexc, int& nion, int& nopt, int& ntherm, double& r) 
+    : nexc_(nexc), nion_(nion), nopt_(nopt), ntherm_(ntherm), r_(r)
     {}
 
     MediumResponse::~MediumResponse()
     {}
 
-    void MediumResponse::Excitation(const G4Step* step, int nexc, int nion)
+    void MediumResponse::Excitation(const G4Step* step)
     {    
         double Wion = 23.6 * eV;
         double ionth = 15.8 * eV;
@@ -21,23 +22,23 @@ namespace G4LArBox
         if (npairs > 30) 
         {
             double res = std::sqrt(fano * npairs);
-            nion = static_cast<int>(std::round(CLHEP::RandGauss::shoot(npairs, res)));
+            nion_ = static_cast<int>(std::round(CLHEP::RandGauss::shoot(npairs, res)));
         }
         else 
         {
-            nion = static_cast<int>(std::round(CLHEP::RandPoisson::shoot(npairs)));
+            nion_ = static_cast<int>(std::round(CLHEP::RandPoisson::shoot(npairs)));
         }
 
-        double eexc = step->GetTotalEnergyDeposit() - nion * (ionth + thermls);
+        double eexc = step->GetTotalEnergyDeposit() - nion_ * (ionth + thermls);
         if (eexc > excth) 
         {
-            nexc = static_cast<int>(std::round(eexc / excth));
+            nexc_ = static_cast<int>(std::round(eexc / excth));
         }
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void MediumResponse::Recombination(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r) 
+    void MediumResponse::Recombination(const G4Step* step) 
     {
         double Efld = 0.5;
         double dEdx = step->GetTotalEnergyDeposit() / step->GetStepLength();
@@ -81,41 +82,48 @@ namespace G4LArBox
             return BirksRecombination(dEdx, Efld) + EscapeRecombination(dEdx, Efld);
         };
 
-        r = ChargeRecombination(0.5, Efld);
+        r_ = ChargeRecombination(dEdx, Efld);
 
-        ntherm = static_cast<int>(std::round(CLHEP::RandBinomial::shoot(ntherm, 1 - r)));
-        if (ntherm < 0) 
+        ntherm_ = static_cast<int>(std::round(CLHEP::RandBinomial::shoot(nion_, r_)));
+
+        if (ntherm_ < 0) 
         {
-            ntherm = 0;
+            ntherm_ = 0;
         }
 
-        nopt = nexc + (nion - ntherm);
+        nopt_ = nexc_ + (nion_ - ntherm_);
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void MediumResponse::ExcitationQuenching(int nopt, int ntherm, double r, double Qopt) 
+    void MediumResponse::ExcitationQuenching(double Q) 
     {
-        nopt = CLHEP::RandBinomial::shoot(nopt, Qopt);
+        if (Q < 1) 
+        {
+            nopt_ = CLHEP::RandBinomial::shoot(nopt_, Q);
+        }
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void MediumResponse::RunProcesses(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r, double Qopt) 
+    void MediumResponse::RunProcesses(const G4Step* step, double Q) 
     {
-        Excitation(step, nexc, nion);
-        Recombination(step, nexc, nion, nopt, ntherm, r);
-        ExcitationQuenching(nopt, ntherm, r, Qopt);
+        Excitation(step);
+        Recombination(step);
+        ExcitationQuenching(Q);
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void MediumResponse::GenerateResponse(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r)
+    void MediumResponse::GenerateResponse(const G4Step* step)
     {
-        nexc, nion, nopt, ntherm = 0;
-        r = 0;
+        nexc_ = 0;
+        nion_ = 0;
+        nopt_ = 0;
+        ntherm_ = 0;
+        r_ = 0;
 
-        double Qopt = 1; // Scintillation quenching factor
+        double Q = 1; // Scintillation quenching factor
 
         if (step->GetTotalEnergyDeposit() > 0) {
             const std::string p = step->GetTrack()->GetDefinition()->GetParticleName();
@@ -133,17 +141,17 @@ namespace G4LArBox
             {
                 if (p == "alpha")
                 {
-                    Qopt = 0.7;
+                    Q = 0.7;
                 }
-                RunProcesses(step, nexc, nion, nopt, ntherm, r, Qopt);
+                RunProcesses(step, Q);
             }
             else 
             {
-                nexc = 0;
-                nion = 0;
-                nopt = 0;
-                ntherm = 0;
-                r = 0;
+                nexc_ = 0;
+                nion_ = 0;
+                nopt_ = 0;
+                ntherm_ = 0;
+                r_ = 0;
             }
         }
     }

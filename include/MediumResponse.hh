@@ -18,14 +18,21 @@ namespace G4LArBox
     class MediumResponse
     {
     public:
-        MediumResponse();
+        MediumResponse(int& nexc, int& nion, int& nopt, int& ntherm, double& r);
         ~MediumResponse();
 
-        void Excitation(const G4Step* step, int nexc, int nion);
-        void Recombination(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r);
-        void ExcitationQuenching(int nopt, int ntherm, double r, double Qopt);
-        void RunProcesses(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r, double Qopt);
-        void GenerateResponse(const G4Step* step, int nexc, int nion, int nopt, int ntherm, double r);
+        void Excitation(const G4Step* step);
+        void Recombination(const G4Step* step);
+        void ExcitationQuenching(double Q);
+        void RunProcesses(const G4Step* step, double Q);
+        void GenerateResponse(const G4Step* step);
+
+    private: 
+        int& nexc_;
+        int& nion_;
+        int& nopt_;
+        int& ntherm_;
+        double& r_;
     };
 }
 

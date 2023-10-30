@@ -3,7 +3,9 @@
 namespace G4LArBox
 {
     PrimaryGeneratorAction::PrimaryGeneratorAction()
-    {}
+    {
+        generalgen_ = new G4GeneralParticleSource();
+    }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
@@ -12,13 +14,13 @@ namespace G4LArBox
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
-    void PrimaryGeneratorAction::GeneratePrimaries(G4Event* anEvent)
-    {}
+    void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
+    {
+        generalgen_->GeneratePrimaryVertex(event);
+    }
 
     void PrimaryGeneratorAction::BulkVertexGenerator(G4ThreeVector& vtx)
     {   
-        // In your PrimaryGeneratorAction class or method:
-
         auto detectorConstruction = static_cast<const DetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());
 
         G4VPhysicalVolume* pVolume = detectorConstruction->GetWorldVolume();

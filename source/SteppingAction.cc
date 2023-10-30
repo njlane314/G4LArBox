@@ -12,12 +12,22 @@ namespace G4LArBox
 
     void SteppingAction::UserSteppingAction(const G4Step* step)
     {
-        int nexc = 0, nion = 0, nopt = 0, ntherm = 0;
-        double r = 0;
+        int nexc, nion, nopt, ntherm; 
+        double r;
         
-        MediumResponse* ResponseModel = new MediumResponse();
-        ResponseModel->GenerateResponse(step, nexc, nion, nopt, ntherm, r);
+        MediumResponse* ResponseModel = new MediumResponse(nexc, nion, nopt, ntherm, r);
+        ResponseModel->GenerateResponse(step);
+
+        std::cout << "----- SteppingAction Debug Info -----\n"
+                  << "nexc: " << nexc << '\n'
+                  << "nion: " << nion << '\n'
+                  << "nopt: " << nopt << '\n'
+                  << "ntherm: " << ntherm << '\n'
+                  << "r: " << r << '\n'
+                  << "-------------------------------------\n";
         
         DataHandler::Instance()->AddStep(step);
+        
+        delete ResponseModel;
     }
 }

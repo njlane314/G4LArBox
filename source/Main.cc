@@ -18,6 +18,26 @@ using namespace G4LArBox;
 
 int main(int argc,char** argv)
 {
+    std::cout << "-- Starting program..." << std::endl;     
+
+    std::string generator_config;
+
+    G4UIExecutive* ui = nullptr;
+    ui = new G4UIExecutive(argc, argv);
+
+    for (int i = 1; i < argc; ++i) {
+        std::string arg = argv[i];
+
+        if ((arg == "-g" || arg == "--generator") && i + 1 < argc) {
+            generator_config = argv[++i];
+        }
+        else {
+            std::cout << "-- Failed to parse command line arguments" << std::endl;
+            
+        }
+    }
+    std::cout << "-- Parsing arguments done" << std::endl;
+
     G4RunManager* runManager = new G4RunManager();
 
     runManager->SetUserInitialization(new DetectorConstruction());
@@ -26,7 +46,15 @@ int main(int argc,char** argv)
     
     runManager->Initialize();
 
-    G4UImanager* UImanager = G4UImanager::GetUIpointer();
+    std::ifstream generator_config_stream(generator_config);
+    if (generator_config_stream.good()) {
+        G4UImanager* ui_manager = G4UImanager::GetUIpointer();
+        ui_manager->ApplyCommand("/control/execute " + generator_config);
+        std::cout << "-- Macro complete!" << std::endl;
+    }
+    else {
+        std::cout << "-- Failed to open generator macro..." << std::endl;
+    }
 
     delete runManager;
 
