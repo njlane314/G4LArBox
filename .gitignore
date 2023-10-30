@@ -44,5 +44,5 @@
 # Build
 build/
 extern/
-data/
+data/plots/
 G4LArBox
