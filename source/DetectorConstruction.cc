@@ -2,15 +2,16 @@
 
 namespace G4LArBox
 {
-    DetectorConstruction::DetectorConstruction(const double wbox, const double hbox, const double lbox)
-    : wbox_(wbox), hbox_(hbox), lbox_(lbox)
+    DetectorConstruction::DetectorConstruction(Messenger* messenger)
+    : messenger_(messenger)
     {}
     DetectorConstruction::~DetectorConstruction() = default;
     
     G4VPhysicalVolume* DetectorConstruction::Construct()
     {
         std::string material = "G4_lAr";
-        //G4double wbox = 1*m, hbox = 1*m, lbox = 1*m;
+        
+        messenger_->GetBoxDimensions(wbox_, hbox_, lbox_);
 
         G4NistManager* nist = G4NistManager::Instance();
         G4Material* box_material = nist->FindOrBuildMaterial(material);

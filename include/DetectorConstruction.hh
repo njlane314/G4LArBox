@@ -19,22 +19,25 @@
 #include "G4VisAttributes.hh"
 #include "G4Colour.hh"
 
+#include "Messenger.hh"
+
 namespace G4LArBox
 {
   class DetectorConstruction : public G4VUserDetectorConstruction
   {
     public:
-        DetectorConstruction(const double wbox, const double hbox, const double lbox);
+        DetectorConstruction(Messenger* messenger);
         ~DetectorConstruction();
 
         G4VPhysicalVolume* Construct();
         G4VPhysicalVolume* GetWorldVolume() const { return box_physical; }
 
     private:
+        Messenger* messenger_;
         G4VPhysicalVolume* box_physical;
 
         double wbox_, hbox_, lbox_;
   };
 }
 
-#endif
+#endif //DETECTORCONSTRUCTION_HH

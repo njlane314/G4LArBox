@@ -1,6 +1,7 @@
 #include "DetectorConstruction.hh"
 #include "ActionInitialisation.hh"
 #include "PhysicsList.hh"
+#include "Messenger.hh"
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -26,6 +27,7 @@ int main(int argc,char** argv)
     G4long seed = time(0);
     CLHEP::HepRandom::setTheSeed(seed);
 
+    std::string detector_config;
     std::string generator_config;
 
     G4UIExecutive* ui = nullptr;
@@ -40,43 +42,31 @@ int main(int argc,char** argv)
         {
             generator_config = argv[++i];
         }
-        else if (arg == "-w" || arg == "--width") 
+        else if ((arg == "-d" || arg == "--detector") && i + 1 < argc) 
         {
-            if (i + 1 < argc) {
-                wbox_ = std::stod(argv[++i])*m;
-            } else {
-                std::cout << "-- Failed to parse box width" << std::endl;
-                return 1;
-            }
-        } 
-        else if (arg == "-h" || arg == "--height") 
-        {
-            if (i + 1 < argc) {
-                hbox_ = std::stod(argv[++i])*m;
-            } else {
-                std::cout << "-- Failed to parse box height" << std::endl;
-                return 1;
-            }
-        } 
-        else if (arg == "-l" || arg == "--length") 
-        {
-            if (i + 1 < argc) {
-                lbox_ = std::stod(argv[++i])*m;
-            } else {
-                std::cout << "-- Failed to parse box length" << std::endl;
-                    return 1;
-            }
-        } 
+            detector_config = argv[++i];
+        }
         else 
         {
             std::cout << "-- Failed to parse command line arguments" << std::endl;
         }
     }
-    std::cout << "-- Parsing arguments done" << std::endl;
+    std::cout << "-- Parsing arguments done!" << std::endl;
 
     G4RunManager* runManager = new G4RunManager();
 
-    runManager->SetUserInitialization(new DetectorConstruction(wbox_, hbox_, lbox_));
+    runManager->SetUserInitialization(new DetectorConstruction(new Messenger()));
+
+    std::ifstream detector_config_stream(detector_config);
+    if (detector_config_stream.good()) {
+        G4UImanager* ui_manager = G4UImanager::GetUIpointer();
+        ui_manager->ApplyCommand("/control/execute " + detector_config);
+        std::cout << "-- Detector macro complete!" << std::endl;
+    }
+    else {
+        std::cout << "-- Failed to open detector macro..." << std::endl;
+    }
+
     runManager->SetUserInitialization(new PhysicsList());
     runManager->SetUserInitialization(new ActionInitialisation());
     
