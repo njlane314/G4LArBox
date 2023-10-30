@@ -27,7 +27,7 @@ namespace G4LArBox
         DataHandler(const DataHandler&) = delete;
         DataHandler& operator=(const DataHandler&) = delete;
 
-        void AddStep(const G4Step* step);
+        void AddStep(const G4Step* step,  int nexc, int nion, int nopt, int ntherm);
         void AddTrack(const G4Track* track);
         void AddEntry();
         void WriteFile();
@@ -41,9 +41,13 @@ namespace G4LArBox
         TFile* rootFile;
         TTree* stepTree;
         TTree* trackTree;
+        TTree* eventTree;
 
         std::vector<double> edep_, len_, xs_, ys_, zs_, xe_, ye_, ze_, ta_;
         std::vector<int> parid_;
+
+        std::vector<double> nexc_, nion_, nopt_, ntherm_;
+        int tnexc_, tnion_, tnopt_, tntherm_;
         
         std::vector<double> xi_, yi_, zi_, ti_, pxi_, pyi_, pzi_, ekini_;
         std::vector<int> pdg_, curid_, preid_;

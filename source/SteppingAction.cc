@@ -18,7 +18,7 @@ namespace G4LArBox
         MediumResponse* ResponseModel = new MediumResponse(nexc, nion, nopt, ntherm, r);
         ResponseModel->GenerateResponse(step);
         
-        DataHandler::Instance()->AddStep(step);
+        DataHandler::Instance()->AddStep(step, nexc, nion, nopt, ntherm);
         
         delete ResponseModel;
     }

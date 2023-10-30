@@ -38,6 +38,10 @@ namespace G4LArBox
         stepTree->Branch("ze", &ze_);
         stepTree->Branch("ta", &ta_);    
         stepTree->Branch("parid", &parid_);
+        stepTree->Branch("nexc", &nexc_);
+        stepTree->Branch("nion", &nion_);
+        stepTree->Branch("nopt", &nopt_);
+        stepTree->Branch("ntherm", &ntherm_);
 
         trackTree = new TTree("trackTree", "trackTree");
         trackTree->Branch("xi", &xi_);
@@ -51,9 +55,15 @@ namespace G4LArBox
         trackTree->Branch("pdg", &pdg_);
         trackTree->Branch("curid", &curid_);
         trackTree->Branch("preid", &preid_);
+
+        eventTree = new TTree("eventTree", "eventTree");
+        eventTree->Branch("tnexc", &tnexc_);
+        eventTree->Branch("tnion", &tnion_);
+        eventTree->Branch("tnopt", &tnopt_);
+        eventTree->Branch("tntherm", &tntherm_);
     }
 
-    void DataHandler::AddStep(const G4Step* step) 
+    void DataHandler::AddStep(const G4Step* step, int nexc, int nion, int nopt, int ntherm) 
     {
         edep_.push_back(step->GetTotalEnergyDeposit());
         len_.push_back(step->GetStepLength());
@@ -70,6 +80,16 @@ namespace G4LArBox
         ze_.push_back(endPos.z());
 
         parid_.push_back(step->GetTrack()->GetParentID());
+
+        nexc_.push_back(nexc);
+        nion_.push_back(nion);
+        nopt_.push_back(nopt);
+        ntherm_.push_back(ntherm);
+
+        tnexc_ += nexc;
+        tnion_ += nion;
+        tnopt_ += nopt;
+        tntherm_ += ntherm;
     }
 
     void DataHandler::AddTrack(const G4Track* track) 
@@ -95,6 +115,7 @@ namespace G4LArBox
     {
         stepTree->Fill();
         trackTree->Fill();
+        eventTree->Fill();
     }
 
     void DataHandler::WriteFile() 
@@ -115,6 +136,10 @@ namespace G4LArBox
         ze_.clear();
         ta_.clear();
         parid_.clear();
+        nexc_.clear();
+        nion_.clear();
+        nopt_.clear();
+        ntherm_.clear();
 
         xi_.clear();
         yi_.clear();
@@ -127,5 +152,10 @@ namespace G4LArBox
         pdg_.clear();
         curid_.clear();
         preid_.clear();
+
+        tnexc_ = 0;
+        tnion_ = 0;
+        tnopt_ = 0;
+        tntherm_ = 0;
     }
 }
