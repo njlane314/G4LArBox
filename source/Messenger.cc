@@ -32,7 +32,21 @@ namespace G4LArBox
         G4UIparameter* box_length_parameter = new G4UIparameter("box_length", 'd', true);
         box_length_parameter->SetGuidance("Set box length.");
         box_length_parameter->SetDefaultValue(1.0);
-        box_length_cmd_->SetParameter(box_length_parameter);;
+        box_length_cmd_->SetParameter(box_length_parameter);
+
+        //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
+
+        particle_directory_ = new G4UIdirectory("/particle/");
+        particle_directory_->SetGuidance("Particle source control commands.");
+
+        particle_source_cmd_ = new G4UIcommand("/particle/source", this);
+        particle_source_cmd_->SetGuidance("Set particle generator source.");
+        particle_source_cmd_->SetGuidance("[usage] /particle/source <general marley>");
+
+        particle_bulk_cmd_ = new G4UIcmdWithABool("/particle/bulk", this);
+        particle_bulk_cmd_->SetGuidance("Set bulk vertex generation.");
+        particle_bulk_cmd_->SetGuidance("[usage /particle/bulk <true/false>]");
+        particle_bulk_cmd->SetDefaultValue(false);
     }
    
     Messenger::~Messenger() {}
@@ -50,6 +64,10 @@ namespace G4LArBox
         {
             box_length_ = std::stod(new_value)*m;
         } 
+        else if(cmd == particle_source_cmd_)
+        {
+            fGPS->SetFlatSampling(flatsamplingCmd->GetNewBoolValue(newValues));
+        }
         else 
         {
             std::cout << "-- Messenger::SetNewValue: Unknown command" << std::endl;
