@@ -13,7 +13,6 @@ namespace G4LArBox
     void EventAction::BeginOfEventAction(const G4Event* event) 
     {
         std::cout << "-- Starting new event..." << std::endl;
-        DataHandler::Instance()->Reset();
     }
 
     //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
@@ -21,5 +20,6 @@ namespace G4LArBox
     void EventAction::EndOfEventAction(const G4Event*)
     {
         DataHandler::Instance()->AddEntry();
+        DataHandler::Instance()->Reset();
     }
 }

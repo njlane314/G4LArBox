@@ -1,0 +1,26 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+# 100 MeV electron signal overlaid with a 10 kt atmospheric-argon
+# radiological background in a 10 us acquisition window.
+/generator/type gps
+/generator/radiological/enable true
+/generator/radiological/window 10 us
+/generator/radiological/massOverrideKg 10000000
+/generator/radiological/maxDecaysPerEvent 250
+/generator/radiological/clear
+/generator/radiological/addIsotope Ar39 18 39 1.01 0.0
+/generator/radiological/addIsotope Ar42 18 42 0.0000404 0.0
+
+/gps/particle e-
+/gps/pos/type Point
+/gps/pos/centre 90.08 225.00 3003.55 cm
+/gps/ang/type beam1d
+/gps/direction 1 0 0
+/gps/ene/type Mono
+/gps/ene/mono 100 MeV
+
+/run/beamOn 5

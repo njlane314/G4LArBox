@@ -1,0 +1,19 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+# Smoke optical sample in the imported single-module geometry.  The source is
+# near the SiPM edge of a central ArCLight placement after applying the GDML
+# parent placements for the left half-detector, LAr volume, and optical plane.
+# 2.88 eV corresponds to roughly 430 nm light after wavelength shifting.
+/gps/particle opticalphoton
+/gps/pos/type Point
+/gps/pos/centre -46.09885 12.62995 -48.3478 cm
+/gps/ang/type iso
+/gps/polarization 1 0 0
+/gps/ene/type Mono
+/gps/ene/mono 2.88 eV
+
+/run/beamOn 500

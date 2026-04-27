@@ -11,8 +11,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -w")
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${PROJECT_SOURCE_DIR})
 
 find_package(Geant4 REQUIRED)
-find_package(ROOT REQUIRED COMPONENTS RIO Core)
-find_package(CLHEP REQUIRED)
+find_package(ROOT REQUIRED COMPONENTS RIO Core Tree)
+find_package(CLHEP QUIET)
 
 #----------------------------------------------------------------------------
 # Setup Geant4 include directories and compile definitions
@@ -31,6 +31,7 @@ set(MAIN_BUILD_DIR "${PROJECT_SOURCE_DIR}/build")
 if (NOT MAIN_EXTERNAL_DIR)
   set(MAIN_EXTERNAL_DIR "${PROJECT_SOURCE_DIR}/extern" )
 endif()
+file(MAKE_DIRECTORY ${MAIN_EXTERNAL_DIR})
 
 #----------------------------------------------------------------------------
 # Check if Marley is already installed
@@ -63,6 +64,38 @@ if (NOT MARLEY_INSTALLED)
 endif()
 
 #----------------------------------------------------------------------------
+# Clone and build BxDecay0 if not already installed
+
+set(BXDECAY0_DIR "${MAIN_EXTERNAL_DIR}/bxdecay0")
+set(BXDECAY0_LIBRARY_PATH "${BXDECAY0_DIR}/_install.d/lib")
+set(BXDECAY0_INCLUDE_DIR "${BXDECAY0_DIR}/_install.d/include")
+set(BXDECAY0_RESOURCE_DIR "${BXDECAY0_DIR}/resources")
+
+if (NOT EXISTS "${BXDECAY0_DIR}/CMakeLists.txt")
+  message(STATUS "Cloning BxDecay0...")
+  execute_process(
+    COMMAND ${CMAKE_COMMAND} -E env git clone https://github.com/BxCppDev/bxdecay0.git ${BXDECAY0_DIR}
+    WORKING_DIRECTORY ${MAIN_EXTERNAL_DIR}
+    RESULT_VARIABLE BXDECAY0_CLONE_STATUS
+  )
+  if (NOT BXDECAY0_CLONE_STATUS EQUAL 0)
+    message(FATAL_ERROR "Failed to clone BxDecay0 into ${BXDECAY0_DIR}")
+  endif()
+endif()
+
+if (NOT EXISTS "${BXDECAY0_INCLUDE_DIR}/bxdecay0/decay0_generator.h")
+  message(STATUS "Building BxDecay0...")
+  execute_process(
+    COMMAND ./tools/build.sh --without-dbd-gA-data --with-geant4-extension --geant4-prefix ${Geant4_DIR}
+    WORKING_DIRECTORY ${BXDECAY0_DIR}
+    RESULT_VARIABLE BXDECAY0_BUILD_STATUS
+  )
+  if (NOT BXDECAY0_BUILD_STATUS EQUAL 0)
+    message(FATAL_ERROR "Failed to build BxDecay0 in ${BXDECAY0_DIR}")
+  endif()
+endif()
+
+#----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 #----------------------------------------------------------------------------
 # Find libraries and include directories
@@ -81,6 +114,16 @@ find_library(MARLEY_ROOT
   NO_DEFAULT_PATH
 )
 
+find_library(GSL_LIBRARY NAMES gsl)
+find_library(GSL_CBLAS_LIBRARY NAMES gslcblas)
+
+find_library(BXDECAY0_LIBRARY
+  NAMES BxDecay0
+  PATHS "${BXDECAY0_LIBRARY_PATH}" "${BXDECAY0_DIR}/_build.d"
+  REQUIRED
+  NO_DEFAULT_PATH
+)
+
 file(GLOB SOURCES   ${MAIN_SOURCE_DIR}/*.cc
 )
 
@@ -92,10 +135,22 @@ add_executable(${PROJECT_NAME} ${SOURCES} ${HEADERS})
 target_include_directories(${PROJECT_NAME} PRIVATE
                             ${MAIN_INCLUDE_DIR}
                             ${MARLEY_DIR}/include
+                            ${BXDECAY0_INCLUDE_DIR}
+)
+
+target_compile_definitions(${PROJECT_NAME} PRIVATE
+                            G4LARBOX_MARLEY_DIR="${MARLEY_DIR}"
+                            G4LARBOX_BXDECAY0_RESOURCE_DIR="${BXDECAY0_RESOURCE_DIR}"
 )
 
 target_link_libraries(${PROJECT_NAME} ${Geant4_LIBRARIES})
 target_link_libraries(${PROJECT_NAME} ${ROOT_LIBRARIES})
-target_link_libraries(${PROJECT_NAME} ${CLHEP_LIBRARIES})
+if (CLHEP_FOUND)
+  target_link_libraries(${PROJECT_NAME} ${CLHEP_LIBRARIES})
+endif()
 
 target_link_libraries(${PROJECT_NAME} ${MARLEY} ${MARLEY_ROOT})
+target_link_libraries(${PROJECT_NAME} ${BXDECAY0_LIBRARY})
+if (GSL_LIBRARY AND GSL_CBLAS_LIBRARY)
+  target_link_libraries(${PROJECT_NAME} ${GSL_LIBRARY} ${GSL_CBLAS_LIBRARY})
+endif()

@@ -1,0 +1,16 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+/generator/type corsika_genie_overlay
+/generator/corsika/file data/corsika_overlay_cosmics.root
+/generator/corsika/tree corsika
+/generator/corsika/cycleEvents false
+/generator/genie/file data/corsika_overlay_genie_gst.root
+/generator/genie/tree gst
+/generator/genie/useInputVertex true
+/generator/genie/cycleEvents false
+
+/run/beamOn 100

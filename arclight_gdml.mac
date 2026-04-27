@@ -1,0 +1,3 @@
+# Standalone ArCLight device geometry preserving the GDML SiPM layout.
+/box/gdmlFile gdml/arclight_device.gdml
+/box/activeVolume volArCLight

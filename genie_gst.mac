@@ -1,0 +1,15 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+# Input ROOT file should contain a standard GENIE gst tree
+# (for example produced with: gntpc -i <ghep.root> -f gst).
+/generator/type genie_gst
+/generator/genie/file data/genie_input_gst.root
+/generator/genie/tree gst
+/generator/genie/useInputVertex false
+/generator/genie/cycleEvents false
+
+/run/beamOn 10

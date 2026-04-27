@@ -1,0 +1,11 @@
+artifact,description
+dunevd_background_uncertainty_samples.root,ROOT sampleTree and waveformTree for nuisance-ensemble studies
+dunevd_pdecay_emission_profile.pdf,ROOT-style delayed scintillation profile with prompt kaon and delayed Michel components
+dunevd_pdecay_node_waveform_decomposition.pdf,FastDPSU node waveform with channel decomposition
+dunevd_pdecay_arapuca_waveform_decomposition.pdf,ARAPUCA waveform with channel decomposition
+dunevd_radiological_noise_floor.pdf,Radiological and electronics noise-floor nuisance variants
+dunevd_background_uncertainty_envelope.pdf,Prior and constrained background-yield uncertainty envelope
+dunevd_rock_neutron_spectrum_uncertainty.pdf,Soft/nominal/hard rock-neutron spectrum variants
+dunevd_event_display_pdecay_overlay.pdf,DUNE VD projection of proton-decay delayed-coincidence event with overlay activity
+dunevd_event_display_rock_neutron.pdf,DUNE VD projection of entering rock-neutron background
+dunevd_event_display_marley_isotropic.pdf,DUNE VD projection of isotropic MARLEY astrophysical-neutrino event

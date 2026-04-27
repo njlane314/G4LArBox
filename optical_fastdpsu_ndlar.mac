@@ -1,0 +1,12 @@
+# Smoke optical sample for the generated FastDPSU ND-LAr marker geometry.
+# 2.88 eV is roughly 430 nm light. The source is near the sensitive face of
+# the left-half central marker after the GDML parent placements are applied.
+/gps/particle opticalphoton
+/gps/pos/type Point
+/gps/pos/centre -22.28 0 0 cm
+/gps/ang/type iso
+/gps/polarization 1 0 0
+/gps/ene/type Mono
+/gps/ene/mono 2.88 eV
+
+/run/beamOn 500

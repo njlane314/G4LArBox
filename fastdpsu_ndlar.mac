@@ -1,0 +1,10 @@
+# FastDPSU marker geometry on the bundled ND-LAr GDML.
+# Generate gdml/ndlar_single_module_fastdpsu.gdml with:
+#   python3 scripts/fastdpsu_geometry_patch.py --input gdml/ndlar_single_module.gdml --output gdml/ndlar_single_module_fastdpsu.gdml --parent volTPCActive --nx 1 --ny 1 --nz 1 --margin-cm 10
+/box/gdmlFile gdml/ndlar_single_module_fastdpsu.gdml
+/box/activeVolume volTPCActive
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0

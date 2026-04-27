@@ -1,0 +1,9 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+/generator/type bxdecay0
+/generator/bxdecay0/background Co60 123457 false
+/run/beamOn 5

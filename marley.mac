@@ -1,0 +1,12 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+/generator/type marley
+/generator/marley/config config/marley_ve40ar_mono.js
+/generator/marley/cycleEvents false
+/generator/marley/seed 12345
+
+/run/beamOn 10

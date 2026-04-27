@@ -1,0 +1,13 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+/generator/type genie_gst
+/generator/genie/file data/lambda_cc_good_gst.root
+/generator/genie/tree gst
+/generator/genie/useInputVertex true
+/generator/genie/cycleEvents false
+
+/run/beamOn 100

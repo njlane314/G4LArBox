@@ -1,0 +1,17 @@
+# DUNE VD FastDPSU surrounding-rock neutron background run.
+# Use with dunevd_fastdpsu_paper.mac as the detector macro and
+# G4LARBOX_FAST_OPTICAL=1 G4LARBOX_FAST_OPTICAL_MODEL=node.
+#
+# This is a boundary-flux model: neutron vertices are sampled on a shell
+# around the active volume, then launched inward with a cosine-law angular
+# distribution. Replace meanPerEvent with flux or rate for production studies.
+/generator/type rock_neutrons
+/generator/rockNeutrons/window 10 us
+/generator/rockNeutrons/meanPerEvent 5
+/generator/rockNeutrons/maxNeutronsPerEvent 50
+/generator/rockNeutrons/shellPadding 100 cm
+/generator/rockNeutrons/spectrum radiogenic
+/generator/rockNeutrons/energyRange 0.1 10 MeV
+/generator/rockNeutrons/energyMean 2 MeV
+/generator/rockNeutrons/direction cosine
+/run/beamOn 5

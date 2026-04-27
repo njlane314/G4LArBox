@@ -1,0 +1,3 @@
+# Full single-module ND-LAr geometry imported from ND_Production/geometry.
+/box/gdmlFile gdml/ndlar_single_module.gdml
+/box/activeVolume volTPCActive

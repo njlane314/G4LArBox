@@ -1,0 +1,16 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+# Input ROOT file should contain a GENIE gst tree from a nucleon/proton-decay
+# GHEP file, for example after conversion with: gntpc -i <pdecay.ghep.root> -f gst.
+# The final-state arrays nf/pdgf/pxf/pyf/pzf are injected directly into Geant4.
+/generator/type genie_pdecay
+/generator/genie/file data/genie_pdecay_gst.root
+/generator/genie/tree gst
+/generator/genie/useInputVertex false
+/generator/genie/cycleEvents false
+
+/run/beamOn 10

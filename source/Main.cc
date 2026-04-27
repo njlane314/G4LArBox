@@ -5,14 +5,13 @@
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
-#include "G4UIterminal.hh"
-#include "G4UItcsh.hh"
-#include "G4VisManager.hh"
-#include "G4VisExecutive.hh"
-#include "G4UIExecutive.hh"
 
 #include "Randomize.hh"
-#include <ctime>  
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <iostream>
+#include <string>
 #include "CLHEP/Random/Random.h"
 
 using namespace G4LArBox;
@@ -22,22 +21,32 @@ using namespace G4LArBox;
 int main(int argc,char** argv)
 {
     std::cout << "-- Starting program..." << std::endl;
-    
+
     CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
     G4long seed = time(0);
+    if (const char* configured_seed = std::getenv("G4LARBOX_RANDOM_SEED"))
+    {
+        char* parse_end = nullptr;
+        const long parsed_seed = std::strtol(configured_seed, &parse_end, 10);
+        if (parse_end != configured_seed)
+        {
+            seed = parsed_seed;
+        }
+    }
     CLHEP::HepRandom::setTheSeed(seed);
+    std::cout << "-- Random seed: " << seed << std::endl;
 
     std::string detector_config;
     std::string generator_config;
 
-    G4UIExecutive* ui = nullptr;
-    ui = new G4UIExecutive(argc, argv);
-
-    double lbox_, hbox_, wbox_;
-
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
 
+        if (arg == "-h" || arg == "--help")
+        {
+            std::cout << "Usage: " << argv[0] << " -d <detector.mac> -g <generator.mac>" << std::endl;
+            return 0;
+        }
         if ((arg == "-g" || arg == "--generator") && i + 1 < argc) 
         {
             generator_config = argv[++i];
@@ -48,10 +57,19 @@ int main(int argc,char** argv)
         }
         else 
         {
-            std::cout << "-- Failed to parse command line arguments" << std::endl;
+            std::cerr << "-- Failed to parse command line argument: " << arg << std::endl;
+            std::cerr << "Usage: " << argv[0] << " -d <detector.mac> -g <generator.mac>" << std::endl;
+            return 1;
         }
     }
     std::cout << "-- Parsing arguments done!" << std::endl;
+
+    if (detector_config.empty() || generator_config.empty())
+    {
+        std::cerr << "-- Both detector and generator macro paths are required." << std::endl;
+        std::cerr << "Usage: " << argv[0] << " -d <detector.mac> -g <generator.mac>" << std::endl;
+        return 1;
+    }
 
     G4RunManager* runManager = new G4RunManager();
 
@@ -64,7 +82,9 @@ int main(int argc,char** argv)
         std::cout << "-- Detector macro complete!" << std::endl;
     }
     else {
-        std::cout << "-- Failed to open detector macro..." << std::endl;
+        std::cerr << "-- Failed to open detector macro: " << detector_config << std::endl;
+        delete runManager;
+        return 1;
     }
 
     runManager->SetUserInitialization(new PhysicsList());
@@ -79,7 +99,9 @@ int main(int argc,char** argv)
         std::cout << "-- Macro complete!" << std::endl;
     }
     else {
-        std::cout << "-- Failed to open generator macro..." << std::endl;
+        std::cerr << "-- Failed to open generator macro: " << generator_config << std::endl;
+        delete runManager;
+        return 1;
     }
 
     delete runManager;

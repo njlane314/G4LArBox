@@ -1,0 +1,12 @@
+/control/verbose 0
+/run/verbose 0
+/event/verbose 0
+/tracking/verbose 0
+/process/verbose 0
+
+/generator/type corsika
+/generator/corsika/file data/corsika_cosmics.root
+/generator/corsika/tree corsika
+/generator/corsika/cycleEvents false
+
+/run/beamOn 100
