@@ -1,14 +1,31 @@
 #include "PrimaryGeneratorAction.hh"
 
+#include "BulkVertexGenerator.hh"
+#include "BxDecay0Generator.hh"
+#include "CorsikaReader.hh"
 #include "DataHandler.hh"
 #include "GeneratorMessenger.hh"
+#include "GeneratorTruth.hh"
+#include "GenieGSTReader.hh"
+#include "MarleyGenerator.hh"
 
+#include "DetectorConstruction.hh"
+#include "G4Box.hh"
 #include "G4Event.hh"
 #include "G4Exception.hh"
+#include "G4GeneralParticleSource.hh"
 #include "G4IonTable.hh"
+#include "G4LogicalVolume.hh"
+#include "G4ParticleDefinition.hh"
+#include "G4ParticleTable.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
+#include "G4RunManager.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4ThreeVector.hh"
+#include "G4VPhysicalVolume.hh"
 #include "G4ios.hh"
+#include "Randomize.hh"
 
 #include "CLHEP/Random/RandExponential.h"
 #include "CLHEP/Random/RandPoisson.h"
@@ -107,8 +124,8 @@ namespace G4LArBox
     }
 
     PrimaryGeneratorAction::PrimaryGeneratorAction()
-        : generalgen_(new G4GeneralParticleSource()),
-          generator_messenger_(new GeneratorMessenger(generator_config_)),
+        : general_generator_(std::make_unique<G4GeneralParticleSource>()),
+          generator_messenger_(std::make_unique<GeneratorMessenger>(generator_config_)),
           genie_reader_(std::make_unique<GenieGSTReader>()),
           corsika_reader_(std::make_unique<CorsikaReader>()),
           marley_generator_(std::make_unique<MarleyGenerator>()),
@@ -116,11 +133,7 @@ namespace G4LArBox
           bulk_vertex_generator_(std::make_unique<G4LArBox::BulkVertexGenerator>())
     {}
 
-    PrimaryGeneratorAction::~PrimaryGeneratorAction()
-    {
-        delete generator_messenger_;
-        delete generalgen_;
-    }
+    PrimaryGeneratorAction::~PrimaryGeneratorAction() = default;
 
     void PrimaryGeneratorAction::GeneratePrimaries(G4Event* event)
     {
@@ -130,14 +143,14 @@ namespace G4LArBox
             {
                 case GeneratorMode::GPS:
                 {
-                    generalgen_->GeneratePrimaryVertex(event);
+                    general_generator_->GeneratePrimaryVertex(event);
 
                     GeneratorTruthRecord truth;
                     truth.source = "gps";
                     AddRadiologicalBackgrounds(event, truth);
                     AddRockNeutronBackgrounds(event, truth);
                     CaptureTruthFromEvent(event, truth);
-                    DataHandler::Instance()->SetGeneratorTruth(truth);
+                    DataHandler::Instance().SetGeneratorTruth(truth);
                     return;
                 }
 
@@ -751,7 +764,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateGenieProtonDecayPrimaries(G4Event* event)
@@ -767,7 +780,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateCorsikaPrimaries(G4Event* event)
@@ -789,7 +802,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateCorsikaGenieOverlayPrimaries(G4Event* event)
@@ -818,7 +831,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateMarleyPrimaries(G4Event* event)
@@ -838,7 +851,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateBxDecay0Primaries(G4Event* event)
@@ -852,7 +865,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateRadiologicalPrimaries(G4Event* event)
@@ -862,7 +875,7 @@ namespace G4LArBox
         AddRadiologicalBackgrounds(event, truth);
         AddRockNeutronBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     void PrimaryGeneratorAction::GenerateRockNeutronPrimaries(G4Event* event)
@@ -872,7 +885,7 @@ namespace G4LArBox
         AddRockNeutronBackgrounds(event, truth);
         AddRadiologicalBackgrounds(event, truth);
         CaptureTruthFromEvent(event, truth);
-        DataHandler::Instance()->SetGeneratorTruth(truth);
+        DataHandler::Instance().SetGeneratorTruth(truth);
     }
 
     int PrimaryGeneratorAction::AddGenieEvent(G4Event* event,

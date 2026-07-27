@@ -1,4 +1,0 @@
-# DUNE Vertical Drift 10 kt nowires geometry patched with the detailed
-# paper-style FastDPSU optical-node lattice.
-/box/gdmlFile gdml/dunevd10kt_3view_30deg_v7_refactored_2x8x40_nowires_fastdpsu_paper_detailed.gdml
-/box/activeVolume volTPCActive

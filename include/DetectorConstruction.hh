@@ -2,54 +2,30 @@
 #define DETECTORCONSTRUCTION_HH
 
 #include "G4VUserDetectorConstruction.hh"
-#include "G4UImessenger.hh"
-#include "G4UserLimits.hh"
-#include "G4UIdirectory.hh"
-#include "G4UIcmdWithAString.hh"
-#include "G4UIcmdWithADoubleAndUnit.hh"
-#include "G4UIcmdWith3VectorAndUnit.hh"
-#include "G4LogicalVolume.hh"
-#include "G4PVPlacement.hh"
-#include "G4NistManager.hh"
-#include "G4Box.hh"
-#include "G4Material.hh"
-#include "G4SystemOfUnits.hh"
-#include "G4ThreeVector.hh"
-#include "G4Tokenizer.hh"
-#include "G4VisAttributes.hh"
-#include "G4Colour.hh"
-
-#include "Messenger.hh"
 
 #include <memory>
 
-class G4GDMLParser;
+class G4VPhysicalVolume;
 
 namespace G4LArBox
 {
-  class DetectorConstruction : public G4VUserDetectorConstruction
-  {
-    public:
-        DetectorConstruction(Messenger* messenger);
-        ~DetectorConstruction();
+    class Messenger;
 
-        G4VPhysicalVolume* Construct();
-        G4VPhysicalVolume* GetWorldVolume() const { return world_physical_; }
-        G4VPhysicalVolume* GetActiveVolume() const { return active_physical_; }
+    class DetectorConstruction final : public G4VUserDetectorConstruction
+    {
+    public:
+        DetectorConstruction();
+        ~DetectorConstruction() override;
+
+        G4VPhysicalVolume* Construct() override;
+        G4VPhysicalVolume* GetWorldVolume() const { return world_volume_; }
+        G4VPhysicalVolume* GetActiveVolume() const { return active_volume_; }
 
     private:
-        Messenger* messenger_;
-        G4VPhysicalVolume* world_physical_;
-        G4VPhysicalVolume* active_physical_;
-        std::unique_ptr<G4GDMLParser> gdml_parser_;
-
-        double wbox_, hbox_, lbox_;
-
-        G4VPhysicalVolume* ConstructBoxGeometry();
-        G4VPhysicalVolume* ConstructGDMLGeometry(const G4String& gdml_file);
-        G4VPhysicalVolume* FindPhysicalVolume(const G4String& name) const;
-        void ConfigureOpticalMaterials() const;
-  };
+        std::unique_ptr<Messenger> messenger_;
+        G4VPhysicalVolume* world_volume_ = nullptr;
+        G4VPhysicalVolume* active_volume_ = nullptr;
+    };
 }
 
-#endif //DETECTORCONSTRUCTION_HH
+#endif

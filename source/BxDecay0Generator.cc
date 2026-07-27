@@ -24,7 +24,6 @@ namespace G4LArBox
                    lhs.nuclide == rhs.nuclide &&
                    lhs.seed == rhs.seed &&
                    lhs.debug == rhs.debug &&
-                   lhs.verbosity == rhs.verbosity &&
                    lhs.dbd_mode == rhs.dbd_mode &&
                    lhs.dbd_level == rhs.dbd_level &&
                    lhs.dbd_min_energy_mev == rhs.dbd_min_energy_mev &&

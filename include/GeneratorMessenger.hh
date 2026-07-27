@@ -46,7 +46,6 @@ namespace G4LArBox
         G4UIcmdWithAString* marley_event_file_cmd_;
         G4UIcmdWithABool* marley_cycle_events_cmd_;
         G4UIcmdWithAnInteger* marley_seed_cmd_;
-        G4UIcmdWithAnInteger* bxdecay0_verbosity_cmd_;
         G4UIcommand* bxdecay0_background_cmd_;
         G4UIcommand* bxdecay0_dbd_cmd_;
         G4UIcommand* bxdecay0_dbdranged_cmd_;

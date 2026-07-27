@@ -1,10 +1,9 @@
 .git
 .DS_Store
+__pycache__/
+*.pyc
 build
+data
 doc
-data/*.root
-data/*.csv
-data/event_displays
-data/plots
-data/thesis_staging
-.thesis_staging
+extern
+G4LArBox

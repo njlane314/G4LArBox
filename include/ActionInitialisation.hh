@@ -3,14 +3,13 @@
 
 #include "G4VUserActionInitialization.hh"
 
-namespace G4LArBox {
-	class ActionInitialisation : public G4VUserActionInitialization {
-	public:
-		ActionInitialisation();
-		virtual ~ActionInitialisation();
-
-		virtual void Build() const;
-	};
+namespace G4LArBox
+{
+    class ActionInitialisation final : public G4VUserActionInitialization
+    {
+    public:
+        void Build() const override;
+    };
 }
 
-#endif // ACTION_INITIALISATION_HH
+#endif

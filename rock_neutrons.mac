@@ -1,0 +1,11 @@
+# Radiogenic neutrons, with mean one per event, launched inward from the box shell.
+/generator/type rock_neutrons
+/generator/rockNeutrons/window 10 us
+/generator/rockNeutrons/meanPerEvent 1
+/generator/rockNeutrons/maxNeutronsPerEvent 10
+/generator/rockNeutrons/shellPadding 100 cm
+/generator/rockNeutrons/spectrum radiogenic
+/generator/rockNeutrons/energyRange 0.1 10 MeV
+/generator/rockNeutrons/energyMean 2 MeV
+/generator/rockNeutrons/direction cosine
+/run/beamOn 10

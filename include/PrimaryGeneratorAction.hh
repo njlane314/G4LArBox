@@ -2,41 +2,38 @@
 #define PRIMARYGENERATORACTION_HH
 
 #include "GeneratorConfig.hh"
-#include "GeneratorTruth.hh"
-#include "GenieGSTReader.hh"
-#include "CorsikaReader.hh"
-#include "DetectorConstruction.hh"
-#include "MarleyGenerator.hh"
-#include "BxDecay0Generator.hh"
-#include "BulkVertexGenerator.hh"
 
+#include "G4ThreeVector.hh"
 #include "G4VUserPrimaryGeneratorAction.hh"
-#include "globals.hh"
-#include "G4GeneralParticleSource.hh"
 
 #include <memory>
 
-#include "G4LogicalVolumeStore.hh"
-#include "G4LogicalVolume.hh"
-#include "G4Box.hh"
-#include "G4RunManager.hh"
-#include "G4ParticleTable.hh"
-#include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
-#include "Randomize.hh"
+class G4Event;
+class G4GeneralParticleSource;
+class G4ParticleDefinition;
 
 namespace G4LArBox
 {
-  class GeneratorMessenger;
+    class BulkVertexGenerator;
+    class BxDecay0Generator;
+    class CorsikaReader;
+    class GeneratorMessenger;
+    class GenieGSTReader;
+    class MarleyGenerator;
+    struct BxDecay0EventRecord;
+    struct CorsikaEvent;
+    struct GenieGSTEvent;
+    struct GeneratorTruthRecord;
+    struct MarleyEventRecord;
 
-  class PrimaryGeneratorAction : public G4VUserPrimaryGeneratorAction
-  {
+    class PrimaryGeneratorAction final : public G4VUserPrimaryGeneratorAction
+    {
     public:
         PrimaryGeneratorAction();
         ~PrimaryGeneratorAction() override;
 
-        void GeneratePrimaries(G4Event*) override;
-        void BulkVertexGenerator(G4ThreeVector& vtx);
+        void GeneratePrimaries(G4Event* event) override;
+        void BulkVertexGenerator(G4ThreeVector& vertex);
 
     private:
         void GenerateGeniePrimaries(G4Event* event);
@@ -57,9 +54,10 @@ namespace G4LArBox
         double SampleRockNeutronEnergy() const;
         double RockNeutronExpectedCount(double shell_area) const;
         double RockNeutronShellArea() const;
-        G4ThreeVector SampleRockNeutronVertex(G4ThreeVector& inward_normal, int& face) const;
+        G4ThreeVector SampleRockNeutronVertex(G4ThreeVector& inward_normal,
+                                             int& face) const;
         G4ThreeVector SampleRockNeutronDirection(const G4ThreeVector& vertex,
-                                                 const G4ThreeVector& inward_normal);
+                                                const G4ThreeVector& inward_normal);
         void AddIsotropicPrimary(G4Event* event,
                                  G4ParticleDefinition* definition,
                                  const G4ThreeVector& vertex,
@@ -79,19 +77,20 @@ namespace G4LArBox
         int AddBxDecay0Event(G4Event* event,
                              const BxDecay0EventRecord& bx_event,
                              GeneratorTruthRecord& truth);
-        void CaptureTruthFromEvent(const G4Event* event, GeneratorTruthRecord& truth) const;
+        void CaptureTruthFromEvent(const G4Event* event,
+                                   GeneratorTruthRecord& truth) const;
         G4ParticleDefinition* FindParticleDefinition(int pdg_code) const;
         int DetermineGeniePrimaryLeptonPdg(const GenieGSTEvent& event) const;
 
-        G4GeneralParticleSource* generalgen_;
+        std::unique_ptr<G4GeneralParticleSource> general_generator_;
         GeneratorConfig generator_config_;
-        GeneratorMessenger* generator_messenger_;
+        std::unique_ptr<GeneratorMessenger> generator_messenger_;
         std::unique_ptr<GenieGSTReader> genie_reader_;
         std::unique_ptr<CorsikaReader> corsika_reader_;
         std::unique_ptr<MarleyGenerator> marley_generator_;
         std::unique_ptr<BxDecay0Generator> bxdecay0_generator_;
         std::unique_ptr<G4LArBox::BulkVertexGenerator> bulk_vertex_generator_;
-  };
+    };
 }
 
-#endif // PRIMARYGENERATORACTION_HH
+#endif

@@ -6,16 +6,14 @@
 #include "SteppingAction.hh"
 #include "TrackingAction.hh"
 
-namespace G4LArBox {
-  ActionInitialisation::ActionInitialisation() : G4VUserActionInitialization() {}
-
-  ActionInitialisation::~ActionInitialisation() {}
-
-  void ActionInitialisation::Build() const {
-    SetUserAction(new PrimaryGeneratorAction());
-    SetUserAction(new RunAction());
-    SetUserAction(new EventAction());
-    SetUserAction(new TrackingAction());
-    SetUserAction(new SteppingAction());
-  }
+namespace G4LArBox
+{
+    void ActionInitialisation::Build() const
+    {
+        SetUserAction(new PrimaryGeneratorAction());
+        SetUserAction(new RunAction());
+        SetUserAction(new EventAction());
+        SetUserAction(new TrackingAction());
+        SetUserAction(new SteppingAction());
+    }
 }

@@ -1,0 +1,7 @@
+# Atmospheric argon activity in the configured liquid-argon box.
+/generator/type radiological
+/generator/radiological/window 1 ms
+/generator/radiological/maxDecaysPerEvent 100
+/generator/radiological/clear
+/generator/radiological/addIsotope Ar39 18 39 1.01 0.0
+/run/beamOn 10

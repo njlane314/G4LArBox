@@ -4,21 +4,10 @@
 /tracking/verbose 0
 /process/verbose 0
 
-/run/initialize
-
-# e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+, gamma, opticalphoton, ...
 /gps/particle kaon+
-
-# point source
 /gps/pos/type Point
 /gps/pos/centre 0 0 0 cm
-
-# angular distribution
 /gps/ang/type iso
-
-# energy distribution
 /gps/ene/type Mono
 /gps/ene/mono 100 MeV
-
-# run
 /run/beamOn 10

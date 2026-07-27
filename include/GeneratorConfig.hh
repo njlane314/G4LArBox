@@ -25,7 +25,6 @@ namespace G4LArBox
         std::string nuclide = "Ar39";
         int seed = 123456;
         bool debug = false;
-        int verbosity = 0;
 
         int dbd_mode = 0;
         int dbd_level = 0;

@@ -1,7 +1,0 @@
-event,lambda_track_id,lambda_start_x_cm,lambda_start_y_cm,lambda_start_z_cm,lambda_decay_x_cm,lambda_decay_y_cm,lambda_decay_z_cm,lambda_decay_inside_active,charged_p_pi_mode,charged_daughter_start_inside,charged_daughter_end_inside,daughter_pdgs
-0,2,0,0,0,1.32698,0.113741,3.03309,yes,yes,yes,yes,2212;-211
-1,2,127.9,0,0,147.135,0,1.20219,no,no,n/a,n/a,2112;111
-2,2,-127.9,0,0,-135.782,0,1.07483,no,yes,no,no,2212;-211
-3,2,0,116.2,0,0.110912,118.196,0.388191,no,no,n/a,n/a,2112;111
-4,2,0,0,517.4,0.905343,0,544.56,no,yes,no,no,2212;-211
-5,2,0,0,-517.4,-0.0164795,0,-517.828,yes,yes,yes,no,2212;-211

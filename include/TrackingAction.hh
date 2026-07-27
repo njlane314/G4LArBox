@@ -1,22 +1,17 @@
 #ifndef TRACKINGACTION_HH
 #define TRACKINGACTION_HH
 
-#include "G4Track.hh"
 #include "G4UserTrackingAction.hh"
 
-#include "DataHandler.hh"
+class G4Track;
 
 namespace G4LArBox 
 {
-    class TrackingAction : public G4UserTrackingAction
+    class TrackingAction final : public G4UserTrackingAction
     {
     public:
-        TrackingAction();
-        virtual ~TrackingAction();
-
-        void PreUserTrackingAction(const G4Track* track);
-        void PostUserTrackingAction(const G4Track* track);
+        void PostUserTrackingAction(const G4Track* track) override;
     };
 }
 
-#endif // TRACKINGACTION_HH
+#endif

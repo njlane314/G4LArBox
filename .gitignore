@@ -30,16 +30,12 @@
 *.exe
 *.out
 *.app
-*.dll
-*.so
-*.o
 
 # Miscellaneous
 .DS_Store
 __pycache__/
 *.pyc
 *.root
-#*.png
 
 # Directories
 .vscode/

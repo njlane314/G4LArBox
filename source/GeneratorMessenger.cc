@@ -62,7 +62,6 @@ namespace G4LArBox
           marley_event_file_cmd_(new G4UIcmdWithAString("/generator/marley/file", this)),
           marley_cycle_events_cmd_(new G4UIcmdWithABool("/generator/marley/cycleEvents", this)),
           marley_seed_cmd_(new G4UIcmdWithAnInteger("/generator/marley/seed", this)),
-          bxdecay0_verbosity_cmd_(new G4UIcmdWithAnInteger("/generator/bxdecay0/verbosity", this)),
           bxdecay0_background_cmd_(new G4UIcommand("/generator/bxdecay0/background", this)),
           bxdecay0_dbd_cmd_(new G4UIcommand("/generator/bxdecay0/dbd", this)),
           bxdecay0_dbdranged_cmd_(new G4UIcommand("/generator/bxdecay0/dbdranged", this)),
@@ -136,10 +135,6 @@ namespace G4LArBox
 
         marley_seed_cmd_->SetGuidance("Optional seed used after loading the MARLEY JSON configuration.");
         marley_seed_cmd_->SetParameterName("seed", false);
-
-        bxdecay0_verbosity_cmd_->SetGuidance("Set the BxDecay0 generator verbosity level.");
-        bxdecay0_verbosity_cmd_->SetParameterName("level", false);
-        bxdecay0_verbosity_cmd_->SetDefaultValue(0);
 
         bxdecay0_background_cmd_->SetGuidance("Configure BxDecay0 background decays: nuclide seed [debug].");
         bxdecay0_background_cmd_->SetParameter(new G4UIparameter("nuclide", 's', false));
@@ -298,7 +293,6 @@ namespace G4LArBox
         delete bxdecay0_dbdranged_cmd_;
         delete bxdecay0_dbd_cmd_;
         delete bxdecay0_background_cmd_;
-        delete bxdecay0_verbosity_cmd_;
         delete generator_type_cmd_;
         delete genie_file_cmd_;
         delete genie_tree_cmd_;
@@ -453,12 +447,6 @@ namespace G4LArBox
         {
             config_.marley_seed = static_cast<unsigned long>(marley_seed_cmd_->GetNewIntValue(new_value));
             config_.marley_has_seed = true;
-            return;
-        }
-
-        if (command == bxdecay0_verbosity_cmd_)
-        {
-            config_.bxdecay0.verbosity = bxdecay0_verbosity_cmd_->GetNewIntValue(new_value);
             return;
         }
 

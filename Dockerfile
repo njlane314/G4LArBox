@@ -1,102 +1,43 @@
-FROM ubuntu:22.04
+FROM --platform=linux/amd64 carlomt/geant4:11.4.2-bookworm AS geant4
 
-ARG BUILD_JOBS=2
+RUN /opt/geant4/bin/geant4-config --install-datasets
 
-ENV DEBIAN_FRONTEND=noninteractive
-ENV GEANT4_VERSION=11.1.2
-ENV ROOTSYS=/software/root_install
-ENV PATH=/software/root_install/bin:${PATH}
-ENV LD_LIBRARY_PATH=/software/root_install/lib:/usr/local/lib:${LD_LIBRARY_PATH}
+FROM --platform=linux/amd64 rootproject/root:6.38.00-ubuntu25.10
 
 SHELL ["/bin/bash", "-lc"]
 
+ENV DEBIAN_FRONTEND=noninteractive
+ENV PATH=/opt/geant4/bin:${PATH}
+ENV CMAKE_PREFIX_PATH=/opt/geant4:${CMAKE_PREFIX_PATH}
+ENV LD_LIBRARY_PATH=/opt/geant4/lib:${LD_LIBRARY_PATH}
+
+COPY --from=geant4 /opt/geant4 /opt/geant4
+COPY --from=geant4 /g4data /g4data
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
-    binutils \
+    build-essential \
     ca-certificates \
     cmake \
-    g++ \
-    gcc \
     git \
     libexpat1-dev \
-    libssl-dev \
+    libgsl-dev \
     libxerces-c-dev \
-    make \
-    python3 \
-    wget \
-    zlib1g-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-WORKDIR /software
-
-RUN mkdir CLHEP && cd CLHEP && \
-    wget --no-check-certificate https://proj-clhep.web.cern.ch/proj-clhep/dist1/clhep-2.4.7.1.tgz && \
-    tar xzf clhep-2.4.7.1.tgz && \
-    mkdir build && cd build && \
-    cmake ../2.4.7.1/CLHEP && \
-    cmake --build . --target install -j${BUILD_JOBS}
-
-RUN apt-get update && apt-get install -y --no-install-recommends \
     nlohmann-json3-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libfreetype6-dev \
-    && rm -rf /var/lib/apt/lists/*
-
-RUN git clone --branch latest-stable --depth=1 https://github.com/root-project/root.git root_src
-
-RUN mkdir root_build root_install && cd root_build && \
-    cmake \
-      -DCMAKE_BUILD_TYPE=Release \
-      -DCMAKE_INSTALL_PREFIX=/software/root_install \
-      -Dasimage=OFF \
-      -Dbuiltin_all=ON \
-      -Dbuiltin_freetype=ON \
-      -Dminimal=ON \
-      -Dx11=OFF \
-      ../root_src && \
-    cmake --build . --target install -j${BUILD_JOBS}
-
-RUN mkdir geant4 && cd geant4 && \
-    wget --no-check-certificate https://gitlab.cern.ch/geant4/geant4/-/archive/v${GEANT4_VERSION}/geant4-v${GEANT4_VERSION}.tar.gz && \
-    tar xzf geant4-v${GEANT4_VERSION}.tar.gz && \
-    mkdir build
-
-RUN cd /software/geant4/build && \
-    source /software/root_install/bin/thisroot.sh && \
-    cmake ../geant4-v${GEANT4_VERSION} \
-      -DGEANT4_INSTALL_DATA=ON \
-      -DGEANT4_USE_OPENGL_X11=OFF \
-      -DGEANT4_USE_QT=OFF \
-      -DGEANT4_USE_ROOT=ON \
-      -DGEANT4_USE_SYSTEM_CLHEP=ON \
-      -DCLHEP_ROOT_DIR=/usr/local && \
-    cmake --build . -j${BUILD_JOBS} && \
-    cmake --install .
-
-RUN rm -rf /software/CLHEP/build /software/geant4/build /software/root_build
-
 WORKDIR /opt/G4LArBox
-COPY . /opt/G4LArBox
+COPY CMakeLists.txt .
 
-RUN apt-get update && apt-get install -y --no-install-recommends \
-    libgsl-dev \
-    && rm -rf /var/lib/apt/lists/*
+RUN source /opt/root/bin/thisroot.sh && \
+    source /opt/geant4/bin/geant4.sh && \
+    cmake -S . -B build-dependencies -DG4LARBOX_DEPENDENCIES_ONLY=ON
 
-RUN rm -f extern/.keep && \
-    if [ ! -d extern/marley/.git ]; then \
-      git clone --depth=1 https://github.com/njlane314/marley.git extern/marley; \
-    fi && \
-    source /software/root_install/bin/thisroot.sh && \
-    make -C extern/marley/build -j${BUILD_JOBS}
+COPY . .
 
-RUN mkdir -p build && \
-    source /software/root_install/bin/thisroot.sh && \
-    source /usr/local/bin/geant4.sh && \
+RUN source /opt/root/bin/thisroot.sh && \
+    source /opt/geant4/bin/geant4.sh && \
     cmake -S . -B build && \
-    cmake --build build -j${BUILD_JOBS}
-
-RUN chmod +x /opt/G4LArBox/docker-entrypoint.sh
+    cmake --build build -j2
 
 ENTRYPOINT ["/opt/G4LArBox/docker-entrypoint.sh"]
 CMD ["-d", "simplebox.mac", "-g", "singlegun.mac"]

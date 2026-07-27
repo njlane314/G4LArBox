@@ -1,12 +1,21 @@
 #include "MediumResponse.hh"
 
+#include "G4ParticleDefinition.hh"
+#include "G4Step.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Track.hh"
+
+#include "CLHEP/Random/RandBinomial.h"
+#include "CLHEP/Random/RandGauss.h"
+#include "CLHEP/Random/RandPoisson.h"
+
+#include <cmath>
+#include <string>
+
 namespace G4LArBox
 {
     MediumResponse::MediumResponse(int& nexc, int& nion, int& nopt, int& ntherm, double& r) 
     : nexc_(nexc), nion_(nion), nopt_(nopt), ntherm_(ntherm), r_(r)
-    {}
-
-    MediumResponse::~MediumResponse()
     {}
 
     void MediumResponse::Excitation(const G4Step* step)
@@ -35,8 +44,6 @@ namespace G4LArBox
             nexc_ = static_cast<int>(std::round(eexc / excth));
         }
     }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
     void MediumResponse::Recombination(const G4Step* step) 
     {
@@ -94,8 +101,6 @@ namespace G4LArBox
         nopt_ = nexc_ + (nion_ - ntherm_);
     }
 
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
     void MediumResponse::ExcitationQuenching(double Q) 
     {
         if (Q < 1) 
@@ -104,16 +109,12 @@ namespace G4LArBox
         }
     }
 
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
-
     void MediumResponse::RunProcesses(const G4Step* step, double Q) 
     {
         Excitation(step);
         Recombination(step);
         ExcitationQuenching(Q);
     }
-
-    //....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
     void MediumResponse::GenerateResponse(const G4Step* step)
     {

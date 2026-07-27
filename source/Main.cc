@@ -1,7 +1,6 @@
 #include "DetectorConstruction.hh"
 #include "ActionInitialisation.hh"
 #include "PhysicsList.hh"
-#include "Messenger.hh"
 
 #include "G4RunManager.hh"
 #include "G4UImanager.hh"
@@ -15,8 +14,6 @@
 #include "CLHEP/Random/Random.h"
 
 using namespace G4LArBox;
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo......
 
 int main(int argc,char** argv)
 {
@@ -73,7 +70,7 @@ int main(int argc,char** argv)
 
     G4RunManager* runManager = new G4RunManager();
 
-    runManager->SetUserInitialization(new DetectorConstruction(new Messenger()));
+    runManager->SetUserInitialization(new DetectorConstruction());
 
     std::ifstream detector_config_stream(detector_config);
     if (detector_config_stream.good()) {
@@ -108,5 +105,3 @@ int main(int argc,char** argv)
 
     return 0;
 }
-
-//....oooOO0OOooo........oooOO0OOooo........oooOO0OOooo........oooOO0OOooo.....
